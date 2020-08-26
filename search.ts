@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'querystring';
 import express from 'express';
 import cors from 'cors';
-import {findSourceMap} from "module";
+import { findSourceMap } from "module";
 
 const app: express.Application = express();
 
@@ -12,7 +12,7 @@ const client_secret = '371e1b8a507d4f18ab2702105adfe476';
 
 type trackResponse = {
     name: string;
-    artist:string;
+    artist: string;
     internUrl: string;
     externUrl: string;
     length: number;
@@ -27,14 +27,15 @@ type playlistResponse = {
 }
 
 app.use(cors({
-    origin: 'http://localhost:8000'
+    origin: 'http://localhost:8080'
 }))
 
+app.use('/', express.static(__dirname + '/Frontend'))
 
 app.get('/playlists', async function (req, res) {
     const queryMood = req.query.q as string;
     const queryLimit = req.query.limit as string;
-    const response = await search(queryMood, parseInt(queryLimit),"playlist");
+    const response = await search(queryMood, parseInt(queryLimit), "playlist");
     const playlists = [];
 
     for (const i of response) {
@@ -43,7 +44,7 @@ app.get('/playlists', async function (req, res) {
             songCount: i.tracks.total,
             internUrl: i.uri,
             externUrl: i.external_urls.spotify,
-            coverImageUrl: i.images.map(function (b: {url:string}) {
+            coverImageUrl: i.images.map(function (b: { url: string }) {
                 return b.url
             })
         }
@@ -56,7 +57,7 @@ app.get('/playlists', async function (req, res) {
 app.get('/tracks', async function (req, res) {
     const queryMood = req.query.q as string;
     const queryLimit = req.query.limit as string;
-    const response = await search(queryMood, parseInt(queryLimit),"track");
+    const response = await search(queryMood, parseInt(queryLimit), "track");
     const tracks = [];
 
     for (const i of response) {
@@ -64,14 +65,14 @@ app.get('/tracks', async function (req, res) {
             name: i.name,
             internUrl: i.uri,
             externUrl: i.external_urls.spotify,
-            length:Math.round(i.duration_ms / 1000),
-            artist: i.artists.map(function (a: {name: string}) {
+            length: Math.round(i.duration_ms / 1000),
+            artist: i.artists.map(function (a: { name: string }) {
                 return a.name
             }).join(", ")
         }
- /*       for(const a of i.album.artists ){
-            track.artist = track.artist + ", " + a.name
-        }*/
+        /*       for(const a of i.album.artists ){
+                   track.artist = track.artist + ", " + a.name
+               }*/
         tracks.push(track);
     }
     res.send(tracks);

@@ -48,8 +48,9 @@ var token = '';
 var client_id = '6ae83de1596f4d19a67d3562c6d854bd';
 var client_secret = '371e1b8a507d4f18ab2702105adfe476';
 app.use(cors_1.default({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:8080'
 }));
+app.use('/', express_1.default.static(__dirname + '/Frontend'));
 app.get('/playlists', function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
         var queryMood, queryLimit, response, playlists, _i, response_1, i, playlist;
