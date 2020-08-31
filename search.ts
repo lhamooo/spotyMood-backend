@@ -2,7 +2,21 @@ import axios from 'axios';
 import qs from 'querystring';
 import express from 'express';
 import cors from 'cors';
-import { findSourceMap } from "module";
+
+let port = process.env.PORT || "8080";
+
+let originList = [process.env.ORIGIN || "",`http://localhost:${port}`]
+
+let corsOption = {
+    origin: function (origin: string | undefined, callback:(error: Error | null, allow?: boolean) => void) {
+        if(origin === undefined || originList.includes(origin)) {
+            callback(null,true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
 
 const app: express.Application = express();
 
@@ -26,9 +40,8 @@ type playlistResponse = {
     coverImageUrl: string
 }
 
-app.use(cors({
-    origin: 'http://localhost:8080'
-}))
+// @ts-ignore
+app.use(cors(corsOption))
 
 app.use('/', express.static(__dirname + '/Frontend'))
 
@@ -118,6 +131,6 @@ async function accessToken() {
 
 accessToken().then((t) => token = t)
 
-app.listen(8080, function () {
-    console.log('App is listening on port 8080');
+app.listen(port, function () {
+    console.log(`App is listening on port ${port}`);
 })

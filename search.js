@@ -43,13 +43,24 @@ var axios_1 = __importDefault(require("axios"));
 var querystring_1 = __importDefault(require("querystring"));
 var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
+var port = process.env.PORT || "8080";
+var originList = [process.env.ORIGIN || "", "http://localhost:" + port];
+var corsOption = {
+    origin: function (origin, callback) {
+        if (origin === undefined || originList.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
 var app = express_1.default();
 var token = '';
 var client_id = '6ae83de1596f4d19a67d3562c6d854bd';
 var client_secret = '371e1b8a507d4f18ab2702105adfe476';
-app.use(cors_1.default({
-    origin: 'http://localhost:8080'
-}));
+// @ts-ignore
+app.use(cors_1.default(corsOption));
 app.use('/', express_1.default.static(__dirname + '/Frontend'));
 app.get('/playlists', function (req, res) {
     return __awaiter(this, void 0, void 0, function () {
@@ -178,6 +189,7 @@ function accessToken() {
     });
 }
 accessToken().then(function (t) { return token = t; });
-app.listen(8080, function () {
-    console.log('App is listening on port 8080');
+app.listen(port, function () {
+    console.log("App is listening on port " + port);
 });
+//# sourceMappingURL=search.js.map
