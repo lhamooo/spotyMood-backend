@@ -30,7 +30,7 @@ app.get('/playlists', async function (req, res) {
   res.send(playlists);
 });
 
-app.get('/tracks', async function (req, res) {
+/*app.get('/tracks', async function (req, res) {
   const queryMood = req.query.q as string;
   const queryLimit = req.query.limit as string;
   const tracksResponse = await search(queryMood, parseInt(queryLimit), 'track');
@@ -45,6 +45,27 @@ app.get('/tracks', async function (req, res) {
       })
       .join(', '),
   }));
+  res.send(tracks);
+});*/
+
+app.get('/tracks', async function (req, res) {
+  const queryMood = req.query.q as string;
+  const queryLimit = req.query.limit as string;
+  const tracksResponse = await search(queryMood, parseInt(queryLimit), 'track');
+  const tracks: TrackResponse[] = tracksResponse.map((track: any) => {
+    const durationInMs = track.duration_ms;
+    const durationInSeconds = Math.round(durationInMs / 1000);
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = durationInSeconds % 60;
+
+    return {
+      name: track.name,
+      internUrl: track.uri,
+      externUrl: track.external_urls.spotify,
+      length: `${minutes} minutes ${seconds} seconds`,
+      artist: track.artists.map((a: { name: string }) => a.name).join(', '),
+    };
+  });
   res.send(tracks);
 });
 
