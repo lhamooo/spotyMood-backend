@@ -7,7 +7,11 @@ const port = process.env.PORT || 8080;
 
 const app: express.Application = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://spotymood.netlify.app"],
+  methods: ["GET", "POST", "DELETE"],
+  credentials: true,
+}));
 
 app.get('/playlists', async function (req, res) {
   const queryMood = req.query.q as string;
